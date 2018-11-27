@@ -1,0 +1,78 @@
+{
+    "name": "GANPDE",
+    "n_gpu": 2,
+
+    "archD": {
+        "type": "Discriminator",
+        "args": {
+            "ndf": 64
+        }
+    },
+    "archG": {
+        "type": "Generator",
+        "args": {
+            "ngf": 64
+        }
+    },
+    "data_loader": {
+        "type": "MyDataLoaderFixU0",
+        "args":{
+            "data_dir": "/home1/shenxing/GAN_PDE/",
+            "batch_size": 64,
+            "shuffle": true,
+            "validation_split": 0.1,
+            "num_workers": 4
+        }
+    },
+    "optimizerD": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.0002,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "optimizerG": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.002,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "loss": [
+        "MSE_loss","L1_loss","diff_loss"
+    ],
+    "Lambda": [
+        1,100,0
+    ],
+    "metrics": [
+        "d_metric"
+    ],
+    "lr_schedulerD": {
+        "type":"StepLR",
+        "args":{
+            "step_size":10,
+            "gamma":0.5
+        }
+    },
+    "lr_schedulerG": {
+        "type":"StepLR",
+        "args":{
+            "step_size":20,
+            "gamma":0.5
+        }
+    },
+    "trainer": {
+        "epochs": 50,
+        "save_dir": "/home1/shenxing/GAN_PDE/save_dir/",
+        "save_freq": 1,
+        "verbosity": 2,
+        "monitor": "val_lossD",
+        "monitor_mode": "min"
+    },
+    "visualization":{
+        "tensorboardX": true,
+        "log_dir": "/home1/shenxing/GAN_PDE/runs/"
+    }
+}
