@@ -23,3 +23,4 @@ hidn = 2
 out_d = 3
 net = NN_Network(in_d, hidn, out_d)
 print(list(net.parameters()))
+print("test")
