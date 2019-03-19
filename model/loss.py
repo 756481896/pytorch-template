@@ -12,6 +12,11 @@ def MSE_loss(predict,target):
 # def nll_loss(output, target):
 #     return F.nll_loss(output, target)
 
+def F_loss(u_t,u_x, u_y, u_xx, u_yy):
+    F = u_t - u_x - u_y - u_xx - u_yy
+    loss = nn.MSELoss()
+    return loss(F, torch.zeros_like(F))
+
 def L1_loss(predict,target):
     loss = nn.L1Loss()
     return loss(predict,target)

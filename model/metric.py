@@ -1,5 +1,7 @@
 import torch
 import pdb
+from torch import nn
+
 def g_metric(output, target):
     """
     :param output: G的输出 [batch_size,1,64,64]
@@ -27,6 +29,11 @@ def d_metric(output, target):
 
     return correct / len(target)
 
+def L2_metric(output, target):
+    with torch.no_grad():
+        loss = nn.MSELoss()
+        l = loss(output, target)
+    return l
 
 def my_metric(output, target):
     with torch.no_grad():

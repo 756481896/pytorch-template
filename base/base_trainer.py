@@ -41,9 +41,11 @@ class BaseTrainer:
 
         # setup directory for checkpoint saving
         start_time = datetime.datetime.now().strftime('%m%d_%H%M%S')
-        self.checkpoint_dir = os.path.join(config['trainer']['save_dir'], config['name'], start_time)
+        # self.checkpoint_dir = os.path.join(config['trainer']['save_dir'], config['name'], start_time)
+        self.checkpoint_dir = os.path.join(config['trainer']['save_dir'], config['name'])
         # setup visualization writer instance
-        writer_dir = os.path.join(config['visualization']['log_dir'], config['name'], start_time)
+        # writer_dir = os.path.join(config['visualization']['log_dir'], config['name'], start_time)
+        writer_dir = os.path.join(config['visualization']['log_dir'], config['name'])
         self.writer = WriterTensorboardX(writer_dir, self.logger, config['visualization']['tensorboardX'])
 
         # Save configuration file into checkpoint directory:

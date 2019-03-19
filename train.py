@@ -7,6 +7,7 @@ import model.loss as module_loss
 import model.metric as module_metric
 import model.model2 as module_arch
 from trainer.pix2pixtrainer import TrainerGAN
+
 from utils import Logger
 torch.set_default_tensor_type('torch.DoubleTensor')
 # os.environ["CUDA_VISIBLE_DEVICES"] = "3,4"
@@ -54,7 +55,7 @@ def main(config, resume):
 if __name__ == '__main__':
     config = json.load(open("./myconfig.json"))
     path = os.path.join(config['trainer']['save_dir'], config['name'])
-    device = "0,1"
+    device = "1"
     os.environ["CUDA_VISIBLE_DEVICES"]=device
 
     main(config,resume=False)

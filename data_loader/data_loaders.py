@@ -6,6 +6,28 @@ import numpy as np
 import torch
 import torch.utils.data as utils
 import pdb
+
+class VariantCoeLinearDataLoader(BaseDataLoader):
+    """
+    使用pdenet文章中的代码生成的数据，
+    xy: [28,49,49,2]
+    uT: [28,49,49,20]
+    u0: [28,49,49]
+    """
+    def __init__(self, data_dir, batch_size, shuffle, validation_split, num_workers, training=True):
+        self.data_dir = data_dir
+        xy_path = os.path.join(data_dir, 'xy.pt')
+        u0_path = os.path.join(data_dir, 'u0.pt')
+        uT_path = os.path.join(data_dir, 'uT.pt')
+        xy = torch.load(xy_path)
+        u0 = torch.load(u0_path)
+        u0 = u0.view(-1,49,49,1)
+        uT = torch.load(uT_path)
+        uT = torch.cat((u0,uT),3)
+
+        self.dataset = utils.TensorDataset(xy,u0,uT)
+        super(VariantCoeLinearDataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+
 # class MyCustomDataset(Dataset):
 #     def __init__(self, data_dir='/home1/shenxing/GAN_PDE'):
 #         # 自己定义的dataset函数，用于读取生成好的热方程的64*64的数据
@@ -81,3 +103,4 @@ class MyDataLoaderFixU0(BaseDataLoader):
         TargetG = alpha_sample
         self.dataset = utils.TensorDataset(InputD, TargetD, InputG, TargetG)
         super(MyDataLoaderFixU0, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
+
