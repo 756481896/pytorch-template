@@ -1,0 +1,58 @@
+{
+    "name": "ATTENTIONPDE",
+    "n_gpu": 0,
+
+    "arch": {
+        "type": "AttentionPDEModel",
+        "args": {
+            "ndim": 49,
+            "T": 21
+        }
+    },
+    "data_loader": {
+        "type": "VariantCoeLinearDataLoader",
+        "args":{
+            "data_dir": "/home1/shenxing/Attention_PDE/data/",
+            "batch_size": 1,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 1
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.0002,
+            "weight_decay": 0,
+            "amsgrad": true
+        }
+    },
+    "loss": [
+        "L1_loss","F_loss"
+    ],
+    "Lambda": [
+        1,100,0
+    ],
+    "metrics": [
+        "L2_metric"
+    ],
+    "lr_scheduler": {
+        "type":"StepLR",
+        "args":{
+            "step_size":10,
+            "gamma":0.5
+        }
+    },
+    "trainer": {
+        "epochs": 100,
+        "save_dir": "/home1/shenxing/Attention_PDE/save_dir/",
+        "save_freq": 1,
+        "verbosity": 2,
+        "monitor": "val_loss",
+        "monitor_mode": "min"
+    },
+    "visualization":{
+        "tensorboardX": true,
+        "log_dir": "/home1/shenxing/Attention_PDE/save_dir/"
+    }
+}

@@ -2,12 +2,12 @@ import os
 import json
 import argparse
 import torch
-import data_loader.data_loaders as module_data
+import data_loader.obstacle_problem_data_loaders as module_data
 import model.loss as module_loss
 import model.metric as module_metric
-import model.poisson_membrance_model as module_arch
+import model.obstacle_problem_model as module_arch
 # from trainer.pix2pixtrainer import TrainerGAN
-from trainer.trainer import Trainer
+from trainer.obstacle_trainer import Trainer
 from utils import Logger
 
 torch.set_default_tensor_type('torch.DoubleTensor')
@@ -19,8 +19,8 @@ def main(config, resume):
 
     # setup data_loader instances
     data_loader = get_instance(module_data, 'data_loader', config)
-    valid_data_loader = data_loader.split_validation()
-
+    # valid_data_loader = data_loader.split_validation()
+    valid_data_loader = get_instance(module_data, 'valid_data_loader', config)
     # build model architecture
     model = get_instance(module_arch, 'arch', config)
     print(model)
@@ -47,7 +47,7 @@ def main(config, resume):
     trainer.train()
 
 if __name__ == '__main__':
-    config = json.load(open("./poisson_membrance_config.json"))
+    config = json.load(open("./obstacle_problem_config.json"))
     path = os.path.join(config['trainer']['save_dir'], config['name'])
     device = "1"
     os.environ["CUDA_VISIBLE_DEVICES"]=device

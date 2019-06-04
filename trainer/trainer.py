@@ -12,14 +12,13 @@ class Trainer(BaseTrainer):
         Inherited from BaseTrainer.
     """
     def __init__(self, model, loss, metrics, optimizer, resume, config,
-                 data_loader, valid_data_loader=None, lr_schedulerD=None, lr_schedulerG=None, train_logger=None):
+                 data_loader, valid_data_loader=None, lr_scheduler=None, train_logger=None):
         super(Trainer, self).__init__(model, loss, metrics, optimizer, resume, config, train_logger)
         self.config = config
         self.data_loader = data_loader
         self.valid_data_loader = valid_data_loader
         self.do_validation = self.valid_data_loader is not None
-        self.lr_schedulerD = lr_schedulerD
-        self.lr_schedulerG = lr_schedulerG
+        self.lr_scheduler = lr_scheduler
         self.log_step = int(np.sqrt(data_loader.batch_size))
 
     def _eval_metrics(self, output, target):
@@ -81,10 +80,8 @@ class Trainer(BaseTrainer):
             val_log = self._valid_epoch(epoch)
             log = {**log, **val_log}
 
-        if self.lr_schedulerD is not None:
-            self.lr_schedulerD.step()
-        if self.lr_schedulerG is not None:
-            self.lr_schedulerG.step()
+        if self.lr_scheduler is not None:
+            self.lr_scheduler.step()
 
         return log
 

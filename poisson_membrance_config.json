@@ -5,19 +5,19 @@
     "archD": {
         "type": "Discriminator",
         "args": {
-            "ndf": 64
+            "ndf": 32
         }
     },
     "archG": {
         "type": "Generator",
         "args": {
-            "ngf": 64
+            "ngf": 32
         }
     },
     "data_loader": {
-        "type": "MyDataLoaderFixU0",
+        "type": "PoissonMembranceDataLoader",
         "args":{
-            "data_dir": "/home1/shenxing/GAN_PDE/",
+            "data_dir": "/home1/shenxing/Fenics/poisson_membrance/",
             "batch_size": 64,
             "shuffle": true,
             "validation_split": 0.1,
@@ -41,10 +41,10 @@
         }
     },
     "loss": [
-        "MSE_loss","L1_loss","diff_loss"
+        "MSE_loss","L1_loss"
     ],
     "Lambda": [
-        1,100,0
+        1,10,100
     ],
     "metrics": [
         "d_metric"
@@ -73,6 +73,6 @@
     },
     "visualization":{
         "tensorboardX": true,
-        "log_dir": "/home1/shenxing/GAN_PDE/runs/"
+        "log_dir": "/home1/shenxing/GAN_PDE/runs/poisson_membrance/"
     }
 }

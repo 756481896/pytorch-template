@@ -153,8 +153,9 @@ class BaseTrainerGAN:
         self.logger.info("Saving checkpoint: {} ...".format(filename))
         if save_best:
             best_path = os.path.join(self.checkpoint_dir, 'model_best.json')
-            with open(best_path, 'w') as handle:
-                json.dump(state, handle, indent=4, sort_keys=False)
+            # with open(best_path, 'w') as handle:
+            #     json.dump(state, handle, indent=4, sort_keys=False)
+            torch.save(state, best_path)
             self.logger.info("Saving current best: {} ...".format('model_best.pth'))
 
     def _resume_checkpoint(self, resume_path):

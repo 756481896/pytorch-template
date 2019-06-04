@@ -2,8 +2,11 @@ import numpy as np
 import torch
 from torchvision.utils import make_grid
 from base.BaseTrainerGAN import BaseTrainerGAN
-from model.loss import diff_loss
+from model.loss import equation_loss
 import pdb
+import os
+import matplotlib.tri as tri
+import matplotlib.pyplot as plt
 class TrainerGAN(BaseTrainerGAN):
     """
     Trainer class
@@ -55,6 +58,7 @@ class TrainerGAN(BaseTrainerGAN):
         total_lossG = 0
         total_metricsD = np.zeros(len(self.metrics))
         # total_metrics_G = np.zeros(len(self.metricsG))
+
         for batch_idx, (InputD,TargetD,InputG,TargetG) in enumerate(self.data_loader):
             #InputD:[u,alpha] shape:[batch_size,2,64,64],TargetD:概率值 shape:[batch_size,1,1,1]
             #InputG:u shape:[batch_size,1,64,64],TargetG:alpha shape:[batch_size,1,64,64]
@@ -66,11 +70,14 @@ class TrainerGAN(BaseTrainerGAN):
             Fake_InputD = torch.cat((InputG,Fake_alpha),dim=1)
             Fake_TargetD = torch.zeros_like(TargetD)
             #D把G生成的结果全为判断为0
+
+            #检查模型D的架构与输出
             assert Fake_InputD.shape == InputD.shape
 
             #更新D
             self.optimizerD.zero_grad()
             predictD = self.modelD(InputD)
+            #[64,1,1,1]
             Fake_predictD = self.modelD(Fake_InputD)
             lossDtrue = self.loss1(predictD, TargetD)
             lossDfake = self.loss1(Fake_predictD, Fake_TargetD)
@@ -82,6 +89,12 @@ class TrainerGAN(BaseTrainerGAN):
             self.writer.add_scalar('lossDtrue', lossDtrue.item())
             self.writer.add_scalar('lossDfake', lossDfake.item())
             self.writer.add_scalar('lossD', lossD.item())
+
+            cmap = plt.cm.rainbow
+            fig = plt.figure()
+            w_vertex = InputG[0,0,:,:].view(-1)
+            plt.tripcolor(self.data_loader.triangulation, w_vertex, cmap=cmap)
+            self.writer.add_figure(fig)
             total_lossD += lossD.item()
             #暂时只记录真实样本的metrics
             total_metricsD += self._eval_metrics(predictD, TargetD,self.metrics)
@@ -96,8 +109,8 @@ class TrainerGAN(BaseTrainerGAN):
             Fake_predictD = self.modelD(Fake_InputD)
             Fake_TargetD = torch.ones_like(TargetD)
             lossG1 = self.loss1(Fake_predictD,Fake_TargetD)
-            lossG2 = self.loss2(predictG,TargetG)
-            lossG3 = diff_loss(Fake_InputD)
+            lossG2 = self.loss1(predictG,TargetG)
+            lossG3 = equation_loss(InputG,predictG)
             # 这里参数要调
             lossG = self.Lambda[0] * lossG1 + self.Lambda[1] * lossG2 + self.Lambda[2] * lossG3
 
@@ -182,7 +195,7 @@ class TrainerGAN(BaseTrainerGAN):
                 predictG = self.modelG(InputG)
                 lossG1 = self.loss1(Fake_predictD, Fake_TargetD)
                 lossG2 = self.loss2(predictG, TargetG)
-                lossG3 = diff_loss(Fake_InputD)
+                lossG3 = equation_loss(InputG,predictG)
                 # 这里参数要调
                 lossG = self.Lambda[0] * lossG1 + self.Lambda[1] * lossG2 + self.Lambda[2] * lossG3
                 self.writer.set_step((epoch - 1) * len(self.valid_data_loader) + batch_idx, 'valid')

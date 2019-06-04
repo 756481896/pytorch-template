@@ -6,6 +6,41 @@ import numpy as np
 import torch
 import torch.utils.data as utils
 import pdb
+import matplotlib.tri as tri
+import matplotlib.pyplot as plt
+class PoissonMembranceDataLoader(BaseDataLoader):
+    """
+    MyDataLoader to get data
+    """
+    def __init__(self, data_dir, batch_size, shuffle, validation_split, num_workers, training=True):
+        self.data_dir = data_dir
+        w_path = os.path.join(data_dir, 'w_data.npy')
+        p_path = os.path.join(data_dir, 'p_data.npy')
+        mesh_path = os.path.join(data_dir,'mesh_coordinates.npy')
+        triangles_path = os.path.join(data_dir,'triangles.npy')
+
+        w_data = np.load(w_path)
+        w_data = torch.from_numpy(w_data)
+        w_data = w_data.view(-1,1,128,128)
+        p_data = np.load(p_path)
+        p_data = torch.from_numpy(p_data)
+        p_data = p_data.view(-1, 1, 128, 128)
+        InputD = torch.cat((w_data,p_data),dim=1)
+        TargetD = torch.ones((InputD.shape[0], 1, 1, 1))
+        InputG = w_data
+        TargetG = p_data
+        # torch.transpose(p_data, 0, 1)
+        self.dataset = utils.TensorDataset(InputD, TargetD, InputG, TargetG)
+
+        #mesh 的numpy的值，用来后面的画图部分
+        mesh_coordinates = np.load(mesh_path)
+        mesh_coordinates = np.reshape(mesh_coordinates,(-1,2))
+        #shape [128*128,2]  (x,y)的坐标
+        triangles = np.load(triangles_path)
+        self.triangulation = tri.Triangulation(mesh_coordinates[:, 0],
+                                          mesh_coordinates[:, 1],
+                                          triangles)
+        super(PoissonMembranceDataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 class VariantCoeLinearDataLoader(BaseDataLoader):
     """
@@ -70,6 +105,8 @@ class MyDataLoader(BaseDataLoader):
         self.data_dir = data_dir
         U_path = os.path.join(data_dir, 'U_data.npy')
         alpha_path = os.path.join(data_dir, 'alpha_data.npy')
+
+
         U_data = np.load(U_path)
         U_data = torch.from_numpy(U_data)
         Alpha_data = np.load(alpha_path)
@@ -81,6 +118,7 @@ class MyDataLoader(BaseDataLoader):
         InputG = U_sample
         TargetG = alpha_sample
         self.dataset = utils.TensorDataset(InputD, TargetD, InputG, TargetG)
+
         super(MyDataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 class MyDataLoaderFixU0(BaseDataLoader):
