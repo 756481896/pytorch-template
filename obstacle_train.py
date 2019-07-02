@@ -20,7 +20,8 @@ def main(config, resume):
     # setup data_loader instances
     data_loader = get_instance(module_data, 'data_loader', config)
     # valid_data_loader = data_loader.split_validation()
-    valid_data_loader = get_instance(module_data, 'valid_data_loader', config)
+    # valid_data_loader = get_instance(module_data, 'valid_data_loader', config)
+    valid_data_loader = None
     # build model architecture
     model = get_instance(module_arch, 'arch', config)
     print(model)

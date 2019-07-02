@@ -3,9 +3,9 @@
     "n_gpu": 1,
 
     "arch": {
-        "type": "NormalResNetModel",
+        "type": "NormalMultiLayersModel",
         "args": {
-            "hidden_size": 30,
+            "hidden_size": 200,
             "input_size": 2
         }
     },
@@ -13,39 +13,37 @@
         "type": "ObstacleProblemDataLoader",
         "args":{
             "data_dir": "/home1/shenxing/ObstacleExperiments/",
-            "batch_size": 64,
+            "batch_size": 16,
             "shuffle": true,
-            "validation_split": 0.1,
+            "validation_split": 0,
             "num_workers": 1,
             "num_internal_points": 1000,
-            "num_boundary_points": 1000
+            "num_boundary_points": 500
         }
     },
     "valid_data_loader": {
-        "type": "ObstacleProblemDataLoader",
+        "type": "ObstacleProblemValidDataLoader",
         "args":{
             "data_dir": "/home1/shenxing/ObstacleExperiments/",
-            "batch_size": 64,
+            "batch_size": 512,
             "shuffle": true,
-            "validation_split": 0.1,
+            "validation_split": 0,
             "num_workers": 1,
-            "num_internal_points": 400,
-            "num_boundary_points": 400
+            "num_internal_points": 6400,
+            "num_boundary_points": 6400
         }
     },
     "optimizer": {
         "type": "Adam",
         "args":{
-            "lr": 0.0002,
-            "weight_decay": 0,
-            "amsgrad": true
+            "lr": 0.001
         }
     },
     "loss": [
-        "MSE_loss","L1_loss"
+        "MSE_loss","max_loss"
     ],
     "Lambda": [
-        1,1,1
+        1,1,500,1
     ],
     "metrics": [
         "d_metric"
@@ -53,12 +51,12 @@
     "lr_scheduler": {
         "type":"StepLR",
         "args":{
-            "step_size":1000,
+            "step_size":10000,
             "gamma":0.5
         }
     },
     "trainer": {
-        "epochs": 1000,
+        "epochs": 100000,
         "save_dir": "/home1/shenxing/ObstacleExperiments/save_dir/",
         "save_freq": 1000,
         "verbosity": 2,

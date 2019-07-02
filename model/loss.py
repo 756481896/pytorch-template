@@ -17,6 +17,10 @@ def F_loss(u_t,u_x, u_y, u_xx, u_yy):
     loss = nn.MSELoss()
     return loss(F, torch.zeros_like(F))
 
+def max_loss(predict,target):
+    """return max value of predict - target"""
+    return torch.max(torch.abs(predict-target))
+
 def L1_loss(predict,target):
     loss = nn.L1Loss()
     return loss(predict,target)
